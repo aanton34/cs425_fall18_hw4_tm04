@@ -1,3 +1,13 @@
-#map { 
-    height: 650px;
+body {
+    margin: 0;
+}
+html, body, #map {
+    height: 100%;
+}
+.popup-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.popup-table-row, .popup-table-header, .popup-table-data {
+    border: double;
 }

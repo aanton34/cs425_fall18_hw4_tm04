@@ -16,8 +16,8 @@
         "CO2": "approx. 8.0 tons per annum",
         "Reimbursement": null,
         "SolarPanelmod": "Solarwatt M 230-96 GET AK (230 W)",
-        "Azimuth": "200 °",
-        "Inclination": "25 °",
+        "Azimuth": "200",
+        "Inclination": "25",
         "Communication": "Sunny WebBox",
         "Inverter": "3 x Sunny Mini Central 7000HV",
         "Sensors": null
@@ -39,8 +39,8 @@
         "CO2": "approx. 2.9 tons per annum",
         "Reimbursement": null,
         "SolarPanelmod": "Sunpower SPR-225-WHT",
-        "Azimuth": "182 °",
-        "Inclination": "32 °",
+        "Azimuth": "182",
+        "Inclination": "32",
         "Communication": "Sunny WebBox",
         "Inverter": "2 x Sunny Boy 2500",
         "Sensors": null
@@ -62,8 +62,8 @@
         "CO2": null,
         "Reimbursement": null,
         "SolarPanelmod": "GH Solar",
-        "Azimuth": "170 °",
-        "Inclination": "45 °",
+        "Azimuth": "170",
+        "Inclination": "45",
         "Communication": "Sunny WebBox",
         "Inverter": "Sunny Boy 1100, Sunny Boy 3800",
         "Sensors": null
