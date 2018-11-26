@@ -1,7 +1,10 @@
 [
     {
         "name": "Corpo",
-        "photo": "",
+        "photo": {
+            "url": "pvSystemsPhotos/corpo.jpg",
+            "caption": "Corpo PV System Photo"
+        },
         "operator": null,
         "ComDate": "27/10/2009",
         "Description": "Installation on the roof of the company COPRO ASBL 90 monocrystalline panels of 230Wc on anodized aluminum weighted structure (TUV, CE, IEC61215 ed.II)",
@@ -21,7 +24,10 @@
     },
     {
         "name": "Harte",
-        "photo": "",
+        "photo": {
+            "url": "pvSystemsPhotos/harte.jpg",
+            "caption": "Harte PV System Photo"
+        },
         "operator": null,
         "ComDate": "12/04/2011",
         "Description": "Installation on roof tiles, 22 panels SUNPOWER of 225Wc black (TUV, CE, IEC61215 ed.II)",
@@ -41,7 +47,10 @@
     },
     {
         "name": "Rosier",
-        "photo": "",
+        "photo": {
+            "url": "pvSystemsPhotos/rosier.jpg",
+            "caption": "Rosier PV System Photo"
+        },
         "operator": null,
         "ComDate": "03/05/2011",
         "Description": "Installation on roof tiles, GH SOLAR panels of 255Wp (TUV, CE, IEC61215 ed.II)",
@@ -61,7 +70,10 @@
     },
     {
         "name": "Iliodora",
-        "photo": "",
+        "photo": {
+            "url": "pvSystemsPhotos/iliodora.jpg",
+            "caption": "Iliodora PV System Photo"
+        },
         "operator": "AENAON ENERGY",
         "ComDate": "19/06/2012",
         "Description": null,
