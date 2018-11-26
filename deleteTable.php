@@ -14,20 +14,29 @@
                 mysqli_query($conn,$sql);
                 $sql="DELETE FROM General;";
                 mysqli_query($conn,$sql);
-                $sql="DELETE FROM Effi;";
+                $sql="DELETE FROM Efficiency;";
                 mysqli_query($conn,$sql);
                 echo json_encode($aResult);
                 break;
             case "deleteOnePV":
-                $solarPanel = htmlspecialchars($_POST['arguments'][0]);
-                $azim = htmlspecialchars($_POST['arguments'][1]);
-                $inclin = htmlspecialchars($_POST['arguments'][2]);
-                $comm = htmlspecialchars($_POST['arguments'][3]);
-                $inv = htmlspecialchars($_POST['arguments'][4]);
-                $sen = htmlspecialchars($_POST['arguments'][5]);
-                $Name = htmlspecialchars($_POST['arguments'][6]);
-                $sql="INSERT INTO Hardware(SolarPanelmod,Azimuth,Inclination,Communication,Inverter,Sensors,generalName)
-                    VALUES('$solarPanel','$azim','$inclin','$comm','$inv','$sen','$Name');";
+                $name = htmlspecialchars($_POST['arguments'][0]);
+                $x = htmlspecialchars($_POST['arguments'][1]);
+                $y = htmlspecialchars($_POST['arguments'][2]);
+                $sql="delete from general 
+                     where Name='$name'
+                    limit 1;";
+                mysqli_query($conn,$sql);
+                $sql="delete from location 
+                     where Name='$name'
+                    limit 1;";
+                mysqli_query($conn,$sql);
+                $sql="delete from Efficiency 
+                     where Name='$name'
+                    limit 1;";
+                mysqli_query($conn,$sql);
+                $sql="delete from Hardware 
+                     where X='$x' and Y='$y'
+                    limit 1;";
                 mysqli_query($conn,$sql);
                 echo json_encode($aResult);
                 break;
