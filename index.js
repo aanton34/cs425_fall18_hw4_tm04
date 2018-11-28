@@ -52,50 +52,107 @@ window.onload = function () {
             })
     }
 
+//#region CREATE DATABASE RECORDS FROM JSON
+    var field = [];
+    function callCreateLocation(i){
+        $.when(createLocation("createLocation",field[i].Address,field[i].X,field[i].Y,field[i].name))
+        .then(function(data){
+            callCreateHardware(i);
+        });
+    }
+
+    function callCreateHardware(i){
+        $.when(createHardWare("createHardWare",field[i].SolarPanelmod,field[i].Azimuth,field[i].Inclination,field[i].Communication,field[i].Inverter,field[i].Sensor,field[i].name))
+        .then(function(data){
+            callCreateEfficiency(i);
+        });
+    }
+
+    function callCreateEfficiency(i){
+        $.when(createEfficiency("createEfficiency",field[i].SystemPower,field[i].AnnualProduction,field[i].CO2,field[i].Reimbursement,field[i].name))
+        .then(function(data){
+            callCreateGeneral(i);
+        });
+    }
+
+    function callCreateGeneral(i){
+        $.when(createGeneral("createGeneral",field[i].name,field[i].photo,field[i].operator,field[i].ComDate,field[i].Description))
+        .then(function (data){
+            return;
+        });
+    }
+
     $("#addDataJson").click(function (){
         $.ajax({
             dataType: "json",
             url: 'SunnyCYdata.json',
             async: false,
-            success: function(field){
+            success: function(data){
+                field = data;
                 for (var i =0; i<field.length; i++){
-                    $.when(createLocation("createLocation",field[i].Address,field[i].X,field[i].Y,field[i].name))
-                        .then(function(data){
-                            $.when(createHardWare("createHardWare",field[i].SolarPanelmod,field[i].Azimuth,field[i].Inclination,field[i].Communication,field[i].Inverter,field[i].Sensor,field[i].name))
-                            .then(function(data){
-                                $.when(createEfficiency("createEfficiency",field[i].SystemPower,field[i].AnnualProduction,field[i].CO2,field[i].Reimbursement,field[i].name))
-                                .then(function(data){
-                                    createGeneral("createGeneral",field[i].name,field[i].photo,field[i].operator,field[i].ComDate,field[i].Description);  
-                                })
-                            }) 
-                        })
+                    callCreateLocation(i);
                 }
             }
-          });
-        // $.getJSON('SunnyCYdata.json',function(data){
-        //     $.each(data,function(i,field){
-        //         // $.when(createLocation("createLocation",field.Address,field.X,field.Y,field.name))
-        //         // .then(function(data){
-        //         //     $.when(createHardWare("createHardWare",field.SolarPanelmod,field.Azimuth,field.Inclination,field.Communication,field.Inverter,field.Sensor,field.name))
-        //         //     .then(function(data){
-        //         //         $.when(createEfficiency("createEfficiency",field.SystemPower,field.AnnualProduction,field.CO2,field.Reimbursement,field.name))
-        //         //         .then(function(data){
-        //         //             createGeneral("createGeneral",field.name,field.photo,field.operator,field.ComDate,field.Description);  
-        //         //         })
-        //         //     }) 
-        //         // })
-        //         console.log("Location"+" "+field.name);
-        //         createLocation("createLocation",field.Address,field.X,field.Y,field.name);
-        //         console.log("HardWare"+" "+field.name);
-        //         createHardWare("createHardWare",field.SolarPanelmod,field.Azimuth,field.Inclination,field.Communication,field.Inverter,field.Sensor,field.name);
-        //         console.log("Efficiency"+" "+field.name);
-        //         createEfficiency("createEfficiency",field.SystemPower,field.AnnualProduction,field.CO2,field.Reimbursement,field.name);
-        //         console.log("General"+" "+field.name);
-        //         createGeneral("createGeneral",field.name,field.photo,field.operator,field.ComDate,field.Description);
-        //         console.log("General"+" "+field.name);
-        //     });
-        // });
+        });
     });
+//#endregion
+        
+    function updateDBGeneral(functionName,Name,operation,ComDate,Description,userID){
+        console.log("empike");
+        $.post("updateData.php",
+        {functionname:functionName,arguments:[Name,operation,ComDate,Description,userID]},
+        function(data){
+            //console.log(data);
+        })
+    }
 
+    function updateDBLocation(functionName,Address,Latitude,Longtitude,user){
+        $.post("updateData.php",
+        {functionname:functionName,arguments:[Address,Latitude,Longtitude,user]},
+        function(data){
+            //console.log(data);
+        })
+    }
+
+    function updateDBEfficiency(functionName,System,Annual,CO2,Reimbursement,user){
+        $.post("updateData.php",
+        {functionname:functionName,arguments:[System,Annual,CO2,Reimbursement,user]},
+        function(data){
+            //console.log(data);
+        })
+    }
+
+    function updateDBHardware(functionName,solarPanel,Azimuth,Inclination,Communication,Inverter,Sensors,user){
+        $.post("updateData.php",
+        {functionname:functionName,arguments:[solarPanel,Azimuth,Inclination,Communication,Inverter,Sensors,user]},
+        function(data){
+            //console.log(data);
+        })
+    }
+
+    document.getElementById("UpdateDataBase").addEventListener("click", function(){
+        var user=document.getElementById("idGen").value;
+        var Name = document.getElementById("NameGen").value;
+        var operation = document.getElementById("operationGen").value;
+        var ComDate = document.getElementById("comDateGen").value;
+        var Description = document.getElementById("descriptionHW").value;
+        updateDBGeneral("updateGeneral",Name,operation,ComDate,Description,user);
+        var Address = document.getElementById("AddressLoc").value;
+        var Latitude = document.getElementById("LatitudeLoc").value;
+        var Longtitude = document.getElementById("LongtitudeLoc").value;
+        updateDBLocation("updateLocation",Address,Latitude,Longtitude,Name);
+        var System = document.getElementById("systemPowerEff").value;
+        var Annual = document.getElementById("annualProductionEff").value;
+        var CO2 = document.getElementById("co2AvoidedEff").value;
+        var Reimbursement = document.getElementById("reimbursementEff").value;
+        updateDBEfficiency("updateEfficiency",System,Annual,CO2,Reimbursement,Name);
+        var solarPanel = document.getElementById("solarPanelHW").value;
+        var Azimuth = document.getElementById("azimuthHW").value;
+        var Inclination = document.getElementById("inclinationHW").value;
+        var Communication = document.getElementById("communicationHW").value;
+        var Inverter = document.getElementById("inverterHW").value;
+        var Sensors = document.getElementById("sensorsHW").value;
+        updateDBHardware("updateHardware",solarPanel,Azimuth,Inclination,Communication,Inverter,Sensors,Name);
+    })
 
 }

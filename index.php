@@ -16,6 +16,9 @@
         <script src="index.js"></script>
         <link rel="stylesheet" type="text/css" href="mystyle.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     </head>
     <body> 
         <div id="map">
@@ -26,7 +29,9 @@
                 }).addTo(map);
             </script>
             <?php 
-                $result=mysqli_query($conn,"SELECT *
+                $result=mysqli_query($conn,"SELECT General.ID,General.Name,General.Operator,General.ComDate,general.Description,Efficiency.SystemPower,efficiency.AnnualProduction,
+                efficiency.CO2,efficiency.Reimbursement,hardware.SolarPanelmod,hardware.Azimuth,hardware.Inclination,
+                hardware.Communication,hardware.Communication,hardware.Inverter,hardware.Sensors,Location.Address,Location.X,Location.Y
                 FROM General
                 INNER JOIN  Location
                 ON General.Loc_ID=Location.ID
@@ -35,9 +40,11 @@
                 INNER JOIN Hardware
                 ON General.Hard_ID=Hardware.ID;");
                 $row=mysqli_fetch_assoc($result);
+                $i = 0;
                 while($row!=null):
             ?>
             <script>
+                var i=parseInt(<?php echo JSON_encode($i); ?>);
                 var x=parseFloat(<?php echo JSON_encode($row['X']); ?>);
                 var y=parseFloat(<?php echo JSON_encode($row['Y']); ?>);
                 var id=<?php echo JSON_encode($row['ID']); ?>;
@@ -116,12 +123,14 @@
                             <td id="value-description" class="popup-table-data">'+description+'</td></tr>\
                     </table>\
                     <input type="submit" id="update" name="update" value="Update">\
+                    <button type="button" class="btn btn-info btn-lg" data-toggle="modal" onclick=getID('+id+'); data-target="#myModal">Update</button>\
                     <input type="submit" id="delete" name="delete" value="Delete">\
                     </form>';
                 L.marker([x,y]).addTo(map)
                 .bindPopup(pvInfo);
             </script>
             <?php
+                $i++;
                 $row=mysqli_fetch_assoc($result);
                 endwhile;
             ?>
@@ -144,6 +153,70 @@
                     .openPopup();
              	});
             </script>
+
+            <script>
+                function getID(id){
+                    //  document.getElementById("idGen").value = id;
+                    // document.getElementById("hiddenID").value=id;
+
+                      $.ajax({
+                            cache: false,
+                            type: 'POST',
+                            url: 'fetchAll.php',
+                            data: 'ID='+id,
+                            success: function(data) 
+                            {
+                                $('#myModal').show();
+                                $('#modalContent').show().html(data);
+                            }
+                        });
+                }
+            </script>
+
+            <form action="" method="post">
+                <input type="hidden" id="hiddenID" name="hiddenID"/> 
+            </form>
+            
+            <?php 
+                // $currentID=$_POST['hiddenID'];
+                // if (isset($_POST['hiddenID'])){
+                //     $currentID = $_POST['hiddenID'];
+                //     $result=mysqli_query($conn,"SELECT General.ID,General.Name,General.Operator,General.ComDate,general.Description,Efficiency.SystemPower,efficiency.AnnualProduction,
+                //     efficiency.CO2,efficiency.Reimbursement,hardware.SolarPanelmod,hardware.Azimuth,hardware.Inclination,
+                //     hardware.Communication,hardware.Communication,hardware.Inverter,hardware.Sensors,Location.Address,Location.X,Location.Y
+                //     FROM General
+                //     INNER JOIN Location
+                //     ON General.Loc_ID=Location.ID
+                //     INNER JOIN Efficiency
+                //     ON General.Eff_ID=Efficiency.ID
+                //     INNER JOIN Hardware
+                //     ON General.Hard_ID=Hardware.ID
+                //     WHERE General.ID='$currentID';");
+                //     $row=mysqli_fetch_assoc($result);
+                //     }
+            ?>
+
+         <!-- Modal -->
+    <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Modal Header</h4>
+        </div>
+        <div class="modal-body">
+          <div id="modalContent">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" id="UpdateDataBase" data-dismiss="modal">Update</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
         </div>
         <button id="addDataJson">Add Json<button>
     </body>

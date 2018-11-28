@@ -22,10 +22,16 @@
                 break;
             case "getOnePV":
                 $name = htmlspecialchars($_POST['arguments'][0]);
-                $sql="delete from general 
-                     where Name='$name'
-                    limit 1;";
-                mysqli_query($conn,$sql);
+                $sql="SELECT *
+                FROM General
+                INNER JOIN  Location
+                ON General.Loc_ID=Location.ID
+                INNER JOIN Efficiency
+                ON General.Eff_ID=Efficiency.ID
+                INNER JOIN Hardware
+                ON General.Hard_ID=Hardware.ID;";
+                $result=mysqli_query($conn,$sql);
+                $row=mysqli_fetch_assoc($result);
                 echo json_encode($aResult);
                 break;
             default:
