@@ -5,6 +5,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <script type="text/javascript" src="index.js"></script>
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
         integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
         crossorigin=""/>
@@ -13,7 +14,6 @@
         integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
         crossorigin="">
         </script>
-        <script src="index.js"></script>
         <link rel="stylesheet" type="text/css" href="mystyle.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -65,6 +65,8 @@
                 var inverter=<?php echo JSON_encode($row['Inverter']); ?>;
                 var sensors=<?php echo JSON_encode($row['Sensors']); ?>;
                 var description=<?php echo JSON_encode($row['Description']); ?>;
+                var marker = L.marker([x,y]);
+                map.addLayer(marker);
                 var pvInfo = '<form id="showInfo-form">\
                     <table class="popup-table">\
                     <tr class="popup-table-row">\
@@ -122,12 +124,10 @@
                             <th class="popup-table-header">Description:</th>\
                             <td id="value-description" class="popup-table-data">'+description+'</td></tr>\
                     </table>\
-                    <input type="submit" id="update" name="update" value="Update">\
                     <button type="button" class="btn btn-info btn-lg" data-toggle="modal" onclick=getID('+id+'); data-target="#myModal">Update</button>\
-                    <input type="submit" id="delete" name="delete" value="Delete">\
+                    <button type="button" class="btn btn-info btn-lg" id="marker-delete-button" onclick=getName(\"'+name+'\");>Delete</button>\
                     </form>';
-                L.marker([x,y]).addTo(map)
-                .bindPopup(pvInfo);
+                marker.bindPopup(pvInfo);
             </script>
             <?php
                 $i++;
@@ -135,89 +135,160 @@
                 endwhile;
             ?>
             <script>
+                function onCreatePopupOpen() {
+                    var tempMarker = this;
+                    // To remove marker on click of delete button in the popup of marker
+                    $("#marker-no-button").click(function () {
+                        map.removeLayer(tempMarker);
+                    });
+                }
                 map.on('click', function(e){
              	    var coord = e.latlng.toString().split(',');
              		var lat = coord[0].split('(');
                     var x1 = parseFloat(lat[1]);
              		var lng = coord[1].split(')');
                     var y1 = parseFloat(lng[0]);
-
+                    var marker = L.marker([x1,y1]);
+                    map.addLayer(marker);
                     var create_new = '<form id="createNew-form">\
                         <label for="createNew">Create new PV system?</label>\
                         <br>\
-                        <input type="submit" name="yes" value="Yes">\
-                        <input type="submit" name="no" value="No">\
+                        <button type="button" class="btn btn-info btn-lg" data-toggle="modal" onclick=callCreate('+x1+','+y1+'); data-target="#myCreateModal">Create</button>\
+                        <button type="button" class="btn btn-info btn-lg" id="marker-no-button">No</button>\
                         </form>';
-             		L.marker([x1,y1]).addTo(map)
-                    .bindPopup(create_new)
-                    .openPopup();
+                    marker.bindPopup(create_new);
+                    marker.on("popupopen", onCreatePopupOpen);
+                    marker.openPopup();
              	});
             </script>
-
             <script>
-                function getID(id){
-                    //  document.getElementById("idGen").value = id;
-                    // document.getElementById("hiddenID").value=id;
 
-                      $.ajax({
-                            cache: false,
-                            type: 'POST',
-                            url: 'fetchAll.php',
-                            data: 'ID='+id,
-                            success: function(data) 
-                            {
-                                $('#myModal').show();
-                                $('#modalContent').show().html(data);
-                            }
-                        });
+                 function callCreate(x1,y1){
+                    document.getElementById("LatitudeLoc1").value=x1;
+                    document.getElementById("LongtitudeLoc1").value=y1;
+                 }
+
+                function getID(id){
+                    $.ajax({
+                        cache: false,
+                        type: 'POST',
+                        url: 'fetchAll.php',
+                        data: 'ID='+id,
+                        success: function(data) 
+                        {
+                            $('#myModal').show();
+                            $('#modalContent').show().html(data);
+                        }
+                    });
+                }
+                function getName(name){
+                    $.ajax({
+                        cache: false,
+                        type: 'POST',
+                        url: 'deleteTable.php',
+                        data: 'Name='+name,
+                        success:    function(data){
+                            window.location.reload(); // then reload the page.(3)
+                        }
+                    });
                 }
             </script>
-
-            <form action="" method="post">
-                <input type="hidden" id="hiddenID" name="hiddenID"/> 
-            </form>
+            <!-- Modal -->
+            <div class="modal fade" id="myModal" role="dialog">
+                <div class="modal-dialog">
+                
+                    <!-- Modal content -->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Update PV System:</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div id="modalContent"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" id="UpdateDataBase" data-dismiss="modal">Update</button>
+                    </div>
+                </div>
+            </div>
             
-            <?php 
-                // $currentID=$_POST['hiddenID'];
-                // if (isset($_POST['hiddenID'])){
-                //     $currentID = $_POST['hiddenID'];
-                //     $result=mysqli_query($conn,"SELECT General.ID,General.Name,General.Operator,General.ComDate,general.Description,Efficiency.SystemPower,efficiency.AnnualProduction,
-                //     efficiency.CO2,efficiency.Reimbursement,hardware.SolarPanelmod,hardware.Azimuth,hardware.Inclination,
-                //     hardware.Communication,hardware.Communication,hardware.Inverter,hardware.Sensors,Location.Address,Location.X,Location.Y
-                //     FROM General
-                //     INNER JOIN Location
-                //     ON General.Loc_ID=Location.ID
-                //     INNER JOIN Efficiency
-                //     ON General.Eff_ID=Efficiency.ID
-                //     INNER JOIN Hardware
-                //     ON General.Hard_ID=Hardware.ID
-                //     WHERE General.ID='$currentID';");
-                //     $row=mysqli_fetch_assoc($result);
-                //     }
-            ?>
+            <!-- Modal -->
+           <div class="modal fade" id="myCreateModal" role="dialog">
+                <div class="modal-dialog">
 
-         <!-- Modal -->
-    <div class="modal fade" id="myModal" role="dialog">
-    <div class="modal-dialog">
-    
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Modal Header</h4>
+                    <!-- Modal content -->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Create a new PV System:</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div id="modalContentCrete">
+                                <form action="">
+                                <label for="nameGen1">Name:</label>
+                                <input type="text" id="NameGen1" name="NameGen" required>
+                                <br>
+                                <label for="operation1">Operator:</label>
+                                <input type="text" id="operationGen1" name="operationGen">
+                                <br>
+                                <label for="comDateGen1">Commision Date:</label>
+                                <input type="text" id="comDateGen1" name="comDateGen" required>
+                                <br>
+                                <label for="AddressLoc1">Address:</label>
+                                <input type="text" id="AddressLoc1" name="AddressLoc" required>
+                                <br>
+                                <label for="latitudeLoc1">Latitude:</label>
+                                <input type="text" id="LatitudeLoc1" name="LatitudeLoc" required disabled>
+                                <br>
+                                <label for="longtitudeLoc1">Longtitude:</label>
+                                <input type="text" id="LongtitudeLoc1" name="LongtitudeLoc" required disabled>
+                                <br>
+                                <label for="systemPowerEff1">System Power:</label>
+                                <input type="text" id="systemPowerEff1" name="systemPowerEff" required>
+                                <br>
+                                <label for="annualProductionEff1">Annual Production:</label>
+                                <input type="text" id="annualProductionEff1" name="annualProductionEff" required>
+                                <br>
+                                <label for="co2AvoidedEff1">CO2 Avoided:</label>
+                                <input type="text" id="co2AvoidedEff1" name="co2AvoidedEff" required>
+                                <br>
+                                <label for="reimbursementEff1">Reimbursement:</label>
+                                <input type="text" id="reimbursementEff1" name="reimbursementEff">
+                                <br>
+                                <label for="solarPanelHW1">Solar Panel Modules:</label>
+                                <input type="text" id="solarPanelHW1" name="solarPanelHW" required>
+                                <br>
+                                <label for="azimuthHW1">Azimuth Angle:</label>
+                                <input type="text" id="azimuthHW1" name="azimuthHW" required>
+                                <br>
+                                <label for="inclinationHW1">Inclination Angle:</label>
+                                <input type="text" id="inclinationHW1" name="inclinationHW" required>
+                                <br>
+                                <label for="communicationHW1">Communication:</label>
+                                <input type="text" id="communicationHW1" name="communicationHW">
+                                <br>
+                                <label for="inverterHW1">Inverter:</label>
+                                <input type="text" id="inverterHW1" name="inverterHW" required>
+                                <br>
+                                <label for="sensorsHW1">Sensors:</label>
+                                <input type="text" id="sensorsHW1" name="sensorsHW">
+                                <br>
+                                <label for="descriptionHW1">Description:</label>
+                                <input type="text" id="descriptionHW1" name="descriptionHW">
+                                <br>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" id="CreatePV" data-dismiss="modal">Create</button>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="modal-body">
-          <div id="modalContent">
-          </div>
+
+        <div>
+            <button id="addDataJson">Add Json</button>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" id="UpdateDataBase" data-dismiss="modal">Update</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-        </div>
-        <button id="addDataJson">Add Json<button>
     </body>
 </html>

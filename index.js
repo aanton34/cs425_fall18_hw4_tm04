@@ -9,6 +9,8 @@ window.onload = function () {
             })
     }
 
+    $('#myModal').modal({backdrop:'static'});
+
     function createHardWare(functionName,solarPanel,azimuth,inclination,communication,inverter,sensor,genName) {
         $.post("createTable.php",
             { functionname:functionName,arguments: [solarPanel,azimuth,inclination,communication,inverter,sensor,genName] },
@@ -155,4 +157,60 @@ window.onload = function () {
         updateDBHardware("updateHardware",solarPanel,Azimuth,Inclination,Communication,Inverter,Sensors,Name);
     })
 
+    function createDBGeneral(functionName,Name,photo,operation,ComDate,Description){
+        console.log("empike sto Create");
+        $.post("createTable.php",
+        {functionname:functionName,arguments:[Name,photo,operation,ComDate,Description]},
+        function(data){
+            //console.log(data);
+        })
+    }
+
+    function createDBLocation(functionName,Address,Latitude,Longtitude,user){
+        $.post("createTable.php",
+        {functionname:functionName,arguments:[Address,Latitude,Longtitude,user]},
+        function(data){
+            //console.log(data);
+        })
+    }
+
+    function createDBEfficiency(functionName,System,Annual,CO2,Reimbursement,user){
+        $.post("createTable.php",
+        {functionname:functionName,arguments:[System,Annual,CO2,Reimbursement,user]},
+        function(data){
+            //console.log(data);
+        })
+    }
+
+    function createDBHardware(functionName,solarPanel,Azimuth,Inclination,Communication,Inverter,Sensors,user){
+        $.post("createTable.php",
+        {functionname:functionName,arguments:[solarPanel,Azimuth,Inclination,Communication,Inverter,Sensors,user]},
+        function(data){
+            //console.log(data);
+        })
+    }
+
+    document.getElementById("CreatePV").addEventListener("click", function(){
+        var Name = document.getElementById("NameGen1").value;
+        var Address = document.getElementById("AddressLoc1").value;
+        var Latitude = document.getElementById("LatitudeLoc1").value;
+        var Longtitude = document.getElementById("LongtitudeLoc1").value;
+        createDBLocation("createLocation",Address,Latitude,Longtitude,Name);
+        var System = document.getElementById("systemPowerEff1").value;
+        var Annual = document.getElementById("annualProductionEff1").value;
+        var CO2 = document.getElementById("co2AvoidedEff1").value;
+        var Reimbursement = document.getElementById("reimbursementEff1").value;
+        createDBEfficiency("createEfficiency",System,Annual,CO2,Reimbursement,Name);
+        var solarPanel = document.getElementById("solarPanelHW1").value;
+        var Azimuth = document.getElementById("azimuthHW1").value;
+        var Inclination = document.getElementById("inclinationHW1").value;
+        var Communication = document.getElementById("communicationHW1").value;
+        var Inverter = document.getElementById("inverterHW1").value;
+        var Sensors = document.getElementById("sensorsHW1").value;
+        createDBHardware("createHardWare",solarPanel,Azimuth,Inclination,Communication,Inverter,Sensors,Name);
+        var operation = document.getElementById("operationGen1").value;
+        var ComDate = document.getElementById("comDateGen1").value;
+        var Description = document.getElementById("descriptionHW1").value;
+        createDBGeneral("createGeneral",Name,null,operation,ComDate,Description);
+    })
 }
