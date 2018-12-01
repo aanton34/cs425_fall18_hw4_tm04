@@ -188,7 +188,7 @@
                         url: 'deleteTable.php',
                         data: 'Name='+name,
                         success:    function(data){
-                            window.location.reload(); // then reload the page.(3)
+                            window.location.reload();
                         }
                     });
                 }

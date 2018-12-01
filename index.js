@@ -9,7 +9,6 @@ window.onload = function () {
             })
     }
 
-    $('#myModal').modal({backdrop:'static'});
 
     function createHardWare(functionName,solarPanel,azimuth,inclination,communication,inverter,sensor,genName) {
         $.post("createTable.php",
@@ -155,10 +154,10 @@ window.onload = function () {
         var Inverter = document.getElementById("inverterHW").value;
         var Sensors = document.getElementById("sensorsHW").value;
         updateDBHardware("updateHardware",solarPanel,Azimuth,Inclination,Communication,Inverter,Sensors,Name);
+        window.location.reload();
     })
 
     function createDBGeneral(functionName,Name,photo,operation,ComDate,Description){
-        console.log("empike sto Create");
         $.post("createTable.php",
         {functionname:functionName,arguments:[Name,photo,operation,ComDate,Description]},
         function(data){
@@ -191,6 +190,7 @@ window.onload = function () {
     }
 
     document.getElementById("CreatePV").addEventListener("click", function(){
+        //console.log("mpenooooo");
         var Name = document.getElementById("NameGen1").value;
         var Address = document.getElementById("AddressLoc1").value;
         var Latitude = document.getElementById("LatitudeLoc1").value;
@@ -212,5 +212,6 @@ window.onload = function () {
         var ComDate = document.getElementById("comDateGen1").value;
         var Description = document.getElementById("descriptionHW1").value;
         createDBGeneral("createGeneral",Name,null,operation,ComDate,Description);
+        window.location.reload();
     })
 }
