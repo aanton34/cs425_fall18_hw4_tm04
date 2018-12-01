@@ -9,7 +9,6 @@ window.onload = function () {
             })
     }
 
-
     function createHardWare(functionName,solarPanel,azimuth,inclination,communication,inverter,sensor,genName) {
         $.post("createTable.php",
             { functionname:functionName,arguments: [solarPanel,azimuth,inclination,communication,inverter,sensor,genName] },

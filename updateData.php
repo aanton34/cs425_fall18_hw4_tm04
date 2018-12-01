@@ -1,8 +1,6 @@
-
 <?php
     include_once 'dbh.inc.php';
 ?>
-
 <?php
     $aResult = array();
     $functionName = htmlspecialchars($_POST['functionname']);

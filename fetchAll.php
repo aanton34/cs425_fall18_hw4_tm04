@@ -1,4 +1,3 @@
-
 <?php
     include_once 'dbh.inc.php';
 ?>
@@ -25,7 +24,7 @@
                             <label for=\"nameGen\">Name:</label>
                             <input type=\"text\" id=\"NameGen\" name=\"NameGen\" value=\"".$row['Name']."\" disabled >
                             <br>
-                            <label for=\"operation\">Operation:</label>
+                            <label for=\"operation\">Operator:</label>
                             <input type=\"text\" id=\"operationGen\" name=\"operationGen\" value=\"".$row['Operator']."\">
                             <br>
                             <label for=\"comDateGen\">Commision Date:</label>
@@ -74,3 +73,4 @@
                             <input type=\"text\" id=\"descriptionHW\" name=\"descriptionHW\" value=\"".$row['Description']."\">
                             <br>
                           </div>";
+?>

@@ -23,7 +23,9 @@
     <body> 
         <div id="map">
             <script>
-                var map = L.map('map').setView([46.770920, 23.589920], 5);
+                var pvSystems = [];
+
+                var map = L.map('map').setView([35.005309, 33.219103], 9.5);
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 }).addTo(map);
@@ -69,7 +71,7 @@
                 map.addLayer(marker);
                 var pvInfo = '<form id="showInfo-form">\
                     <table class="popup-table">\
-                    <tr class="popup-table-row">\
+                        <tr class="popup-table-row">\
                             <th class="popup-table-header">ID:</th>\
                             <td id="value-id" class="popup-table-data">'+id+'</td></tr>\
                         <tr class="popup-table-row">\
@@ -153,7 +155,7 @@
                     var create_new = '<form id="createNew-form">\
                         <label for="createNew">Create new PV system?</label>\
                         <br>\
-                        <button type="button" class="btn btn-info btn-lg" data-toggle="modal" onclick=callCreate('+x1+','+y1+'); data-target="#myCreateModal">Create</button>\
+                        <button type="button" class="btn btn-info btn-lg" data-toggle="modal" onclick=callCreate('+x1+','+y1+'); data-target="#myCreateModal">Yes</button>\
                         <button type="button" class="btn btn-info btn-lg" id="marker-no-button">No</button>\
                         </form>';
                     marker.bindPopup(create_new);
@@ -162,12 +164,10 @@
              	});
             </script>
             <script>
-
-                 function callCreate(x1,y1){
+                function callCreate(x1,y1){
                     document.getElementById("LatitudeLoc1").value=x1;
                     document.getElementById("LongtitudeLoc1").value=y1;
-                 }
-
+                }
                 function getID(id){
                     $.ajax({
                         cache: false,
@@ -196,7 +196,6 @@
             <!-- Modal -->
             <div class="modal fade" id="myModal" role="dialog">
                 <div class="modal-dialog">
-                
                     <!-- Modal content -->
                     <div class="modal-content">
                         <div class="modal-header">
@@ -212,11 +211,9 @@
                     </div>
                 </div>
             </div>
-            
             <!-- Modal -->
            <div class="modal fade" id="myCreateModal" role="dialog">
                 <div class="modal-dialog">
-
                     <!-- Modal content -->
                     <div class="modal-content">
                         <div class="modal-header">
@@ -224,7 +221,7 @@
                             <h4 class="modal-title">Create a new PV System:</h4>
                         </div>
                         <div class="modal-body">
-                            <div id="modalContentCrete">
+                            <div id="modalContentCreate">
                                 <form action="">
                                 <label for="nameGen1">Name:</label>
                                 <input type="text" id="NameGen1" name="NameGen" required>
@@ -286,9 +283,57 @@
                 </div>
             </div>
         </div>
-
+        <div id="pvInfo">
+            <table class="table">
+                <tr class="table-row">
+                    <th class="table-header">ID</th>
+                    <th class="table-header">PV Name</th>
+                    <th class="table-header">Address</th>
+                    <th class="table-header">System Power</th>
+                </tr>
+                <?php 
+                    $result=mysqli_query($conn,"SELECT General.ID,General.Name,Efficiency.SystemPower,Location.Address
+                    FROM General
+                    INNER JOIN  Location
+                    ON General.Loc_ID=Location.ID
+                    INNER JOIN Efficiency
+                    ON General.Eff_ID=Efficiency.ID
+                    INNER JOIN Hardware
+                    ON General.Hard_ID=Hardware.ID;");
+                    $row=mysqli_fetch_assoc($result);
+                    $i = 0;
+                    while($row!=null):
+                ?>
+                <tr class="table-row">
+                    <td class="table-data"><?php echo JSON_encode($row['ID']); ?></td>
+                    <td class="table-data"><?php echo JSON_encode($row['Name']); ?></td>
+                    <td class="table-data"><?php echo JSON_encode($row['Address']); ?></td>
+                    <td class="table-data"><?php echo JSON_encode($row['SystemPower']); ?></td>
+                </tr>
+                <?php
+                    $i++;
+                    $row=mysqli_fetch_assoc($result);
+                    endwhile;
+                ?>
+            </table>
+        </div>
+        <script>
+            $(document).ready(function() {
+                $("#getAllPV").click(function() {
+                    $("#pvInfo").slideToggle(500, function() {
+                        if($("#getAllPV").val() == "close"){
+                            $("#getAllPV").val("PV Systems List");
+                        }
+                        else{
+                            $("#getAllPV").val("close");
+                        }
+                    });
+                });
+            });
+        </script>
         <div>
             <button id="addDataJson">Add Json</button>
+            <input id="getAllPV" type="button" value="PV Systems List"/>
         </div>
     </body>
 </html>

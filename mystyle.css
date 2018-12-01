@@ -14,3 +14,25 @@ html, body{
 .popup-table-row, .popup-table-header, .popup-table-data {
     border: double;
 }
+#addDataJson{
+    display: block;
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    z-index: 10000;
+}
+#getAllPV{
+    display: inline-block;
+    position: fixed;
+    bottom: 0px;
+    left: 75px;
+    z-index: 10000;
+}
+#pvInfo{
+    background-color:white;
+    z-index: 10000;
+    display:none;
+    position:fixed;
+    top: 5%;
+    left: 35%;
+}

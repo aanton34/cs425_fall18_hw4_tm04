@@ -1,8 +1,6 @@
-
 <?php
     include_once 'dbh.inc.php';
 ?>
-
 <?php
     $name = $_POST['Name'];
     $sql="delete from general 
